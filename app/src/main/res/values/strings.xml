@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Xpenses</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_save">Save</string>
+    <string name="action_discard">Discard</string>
+    <string name="unsaved_changes">Changes are not yet saved, do you want to discard or save them?</string>
+</resources>
