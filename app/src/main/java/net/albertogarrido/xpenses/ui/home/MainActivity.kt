@@ -1,14 +1,17 @@
-package net.albertogarrido.xpenses
+package net.albertogarrido.xpenses.ui.home
 
+import android.content.Context
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-
 import kotlinx.android.synthetic.main.activity_main.*
+import net.albertogarrido.xpenses.ui.add.AddActivity
+import net.albertogarrido.xpenses.R
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainPresenter.MainView {
+
+    private val presenter: MainPresenter by lazy { MainPresenter.createWith(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,6 +21,23 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener { view ->
             startActivity(AddActivity.create(this))
         }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenter.resume()
+        presenter.debugPrintAll()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        presenter.pause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.destroy()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -35,4 +55,6 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    override fun getContex(): Context = this
 }

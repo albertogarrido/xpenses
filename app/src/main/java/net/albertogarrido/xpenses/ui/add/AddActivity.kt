@@ -1,4 +1,4 @@
-package net.albertogarrido.xpenses
+package net.albertogarrido.xpenses.ui.add
 
 import android.content.Context
 import android.content.DialogInterface
@@ -10,6 +10,9 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_add.*
 import kotlinx.android.synthetic.main.content_add.*
+import net.albertogarrido.xpenses.database.ExpenseType
+import net.albertogarrido.xpenses.ExpenseViewModel
+import net.albertogarrido.xpenses.R
 
 class AddActivity : AppCompatActivity(), AddPresenter.AddView {
 
@@ -32,6 +35,17 @@ class AddActivity : AppCompatActivity(), AddPresenter.AddView {
             setHomeAsUpIndicator(R.drawable.ic_close_white_24dp)
             setDisplayHomeAsUpEnabled(true)
         }
+        presenter.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        presenter.pause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.destroy()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -48,15 +62,18 @@ class AddActivity : AppCompatActivity(), AddPresenter.AddView {
                     finish()
                 }
             }
-            R.id.action_save -> presenter.save()
+            R.id.action_save -> presenter.save { finish() }
+
         }
         return super.onOptionsItemSelected(item)
     }
 
+    override fun getContex(): Context = this
+
     private fun showOptionalSaveDiscard() {
         AlertDialog.Builder(this).apply {
             setMessage(R.string.unsaved_changes)
-            setPositiveButton(R.string.action_save) { _, _ -> presenter.save() }
+            setPositiveButton(R.string.action_save) { _, _ -> presenter.save { finish() } }
             setNegativeButton(R.string.action_discard) { dialog, _ -> discard(dialog) }
         }.create().show()
     }
@@ -66,11 +83,11 @@ class AddActivity : AppCompatActivity(), AddPresenter.AddView {
         finish()
     }
 
-    override fun collectData(): List<Any> {
-        return listOf(
-            amount.text.toString().toInt(),
+    override fun collectData() =
+        ExpenseViewModel(
+            amount.text.toString(),
             description.text.toString(),
-            if(expense.isChecked) ExpenseType.EXPENSE else ExpenseType.EXPENSE
+            if (expense.isChecked) ExpenseType.EXPENSE else ExpenseType.INCOME
         )
-    }
+
 }
